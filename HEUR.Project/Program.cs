@@ -16,10 +16,11 @@ namespace HEUR.Project
             do
             {
                 Result result = ResultGenerator.NaiveResult();
-                if (result.CannotFind==0)
+                if (result.CannotFind==0 && result.IsValid())
                 {
-                    Console.WriteLine("NADENO RJESENJE "+ (resultList.Count));
+
                     resultList.Add(result);
+                    Console.WriteLine("NADENO RJESENJE " + (resultList.Count));
 
                     PrintResult(result, "Result_"+(resultList.Count)+".txt");
                 }
@@ -29,7 +30,7 @@ namespace HEUR.Project
                 //    result = ResultGenerator.TabuSearch(result);
                 //}
 
-            } while (resultList.Count<=10);
+            } while (resultList.Count<10);
         }
 
         private static void PrintResult(Result result, string filename)

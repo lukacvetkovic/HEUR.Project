@@ -39,7 +39,7 @@ namespace HEUR.Project
 
             }
 
-            Result result =  makeRoutes(rez.x);
+            Result result = makeRoutes(rez.x);
 
             return result;
         }
@@ -72,14 +72,19 @@ namespace HEUR.Project
 
                 for (int j = 0; j < components.Count - 1; j++)
                 {
-                    Route r = findRouteForComponents(components[j], components[j + 1], nodeConnections, x);
-                    if (r != null)
+                    Route r =
+                        routeList.SingleOrDefault(p => p.componentOne == components[j] && p.componentTwo == components[j + 1]);
+                    if (r == null)
                     {
-                        routeList.Add(r);
-                    }
-                    else
-                    {
-                        cannotFind++;
+                        r = findRouteForComponents(components[j], components[j + 1], nodeConnections, x);
+                        if (r != null)
+                        {
+                            routeList.Add(r);
+                        }
+                        else
+                        {
+                            cannotFind++;
+                        }
                     }
                 }
             }
@@ -92,7 +97,7 @@ namespace HEUR.Project
         private static Route findRouteForComponents(int componentStart, int componentEnd, List<NodeConnection> nodeConnections, int[,] x)
         {
             int nodeStart = getComponentNode(componentStart, x);
-            int nodeEnd = getComponentNode(componentEnd, x); 
+            int nodeEnd = getComponentNode(componentEnd, x);
 
             Queue<Route> q = new Queue<Route>();
 
@@ -112,7 +117,7 @@ namespace HEUR.Project
 
                 int[] nexts = getNextNodes(r.comunicationNodes.Last());
 
-                foreach (var next in nexts.Select(p=>p-1))
+                foreach (var next in nexts.Select(p => p - 1))
                 {
                     Route newRoute = new Route() { comunicationNodes = new List<int>(r.comunicationNodes), nodeConnections = new List<NodeConnection>(r.nodeConnections), componentTwo = r.componentTwo, componentOne = r.componentOne };
 

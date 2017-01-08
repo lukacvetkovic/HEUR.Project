@@ -27,8 +27,6 @@ namespace HEUR.Project
 
         private bool CheckResource()
         {
-            bool CPUPass = true;
-            bool MEMPass = true;
             for (int i = 0; i < x.GetLength(0); i++)
             {
                 Double CPUOnServer = InputParameters.av[0, i];
@@ -49,21 +47,17 @@ namespace HEUR.Project
 
                 if (SumCPU > CPUOnServer)
                 {
-                    CPUPass = false;
+                    return false;
                 }
 
                 if (SumMEM > MEMOnServer)
                 {
-                    MEMPass = false;
+                    return false;
                 }
 
-                if (CPUPass == false || MEMPass == false)
-                {
-                    break;
-                }
             }
 
-            return (CPUPass && MEMPass);
+            return true;
         }
 
 

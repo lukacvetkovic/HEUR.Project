@@ -21,11 +21,11 @@ namespace HEUR.Project
 
         public bool IsValid()
         {
-            return CheckResource();
-            //return (CheckResource() && CheckLinkConstraints() && CheckLatency());
+
+            return (CheckResource() && CheckLinkConstraints()); //&& CheckLatency());
         }
 
-        private bool CheckResource()
+        public bool CheckResource()
         {
             for (int i = 0; i < x.GetLength(0); i++)
             {
@@ -72,14 +72,14 @@ namespace HEUR.Project
             {
                 int VmDemand =
                     InputParameters.VmDemands.SingleOrDefault(
-                        p => p.componentOne == route.componentOne && p.componentTwo == route.componentTwo).bandwith;
+                        p => p.componentOne == route.componentOne+1 && p.componentTwo == route.componentTwo+1).bandwith;
                 for (int k = 0; k < route.comunicationNodes.Count - 1; k++)
                 {
                     NodeConnection conn =
                         nodeConnections.SingleOrDefault(
                             p =>
-                                p.firstNode == route.comunicationNodes[k] &&
-                                p.secondNode == route.comunicationNodes[k + 1]);
+                                p.firstNode == route.comunicationNodes[k]+1 &&
+                                p.secondNode == route.comunicationNodes[k + 1]+1);
                     conn.capacity -= VmDemand;
                 }
             }

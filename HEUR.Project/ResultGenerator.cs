@@ -26,7 +26,7 @@ namespace HEUR.Project
                     if (rez.x[server, component] == 0)
                     {
                         rez.x[server, component] = 1;
-                        if (!rez.IsValid())
+                        if (!rez.CheckResource())
                         {
                             rez.x[server, component] = 0;
                         }

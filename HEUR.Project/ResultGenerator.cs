@@ -92,7 +92,7 @@ namespace HEUR.Project
         private static Route findRouteForComponents(int componentStart, int componentEnd, List<NodeConnection> nodeConnections, int[,] x)
         {
             int nodeStart = getComponentNode(componentStart, x);
-            int nodeEnd = getComponentNode(componentEnd, x); ;
+            int nodeEnd = getComponentNode(componentEnd, x); 
 
             Queue<Route> q = new Queue<Route>();
 

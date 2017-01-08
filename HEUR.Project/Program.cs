@@ -18,10 +18,10 @@ namespace HEUR.Project
                 Result result = ResultGenerator.NaiveResult();
                 if (result.CannotFind==0)
                 {
-                    Console.WriteLine("NADENO RJESENJE "+ resultList.Count + 1);
+                    Console.WriteLine("NADENO RJESENJE "+ (resultList.Count));
                     resultList.Add(result);
 
-                    PrintResult(result, "Result_"+resultList.Count+1+".txt");
+                    PrintResult(result, "Result_"+(resultList.Count)+".txt");
                 }
 
                 //while (!result.IsValid())
@@ -60,7 +60,8 @@ namespace HEUR.Project
                 String routeLine = "";
                 foreach (var route in result.routes)
                 {
-                    routeLine="<"+route.componentOne+","+route.componentTwo+",["+string.Join(",", route.comunicationNodes) +"]>,";
+                    int[] comunicationNodes = route.comunicationNodes.Select(p => p + 1).ToArray();
+                    routeLine ="<"+(route.componentOne+1)+","+(route.componentTwo+1)+",["+string.Join(",", comunicationNodes) +"]>,";
 
                     if (result.routes.Last() == route)
                     {

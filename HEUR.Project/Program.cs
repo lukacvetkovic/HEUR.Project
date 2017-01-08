@@ -32,7 +32,9 @@ namespace HEUR.Project
                 //    result = ResultGenerator.TabuSearch(result);
                 //}
 
-            } while (DateTime.Now <=twoHoues);
+            } while (resultList.Count<1);
+
+            
 
             int i = 0;
             foreach (var result in resultList.OrderBy(p=>p.Energy()).Take(10))
@@ -40,7 +42,7 @@ namespace HEUR.Project
                 PrintResult(result, "Result_" + i + ".txt");
                 i++;
             }
-           
+            Console.ReadLine();
         }
 
         private static void PrintResult(Result result, string filename)

@@ -148,7 +148,7 @@ namespace HEUR.Project
         {
             if (IsValid())
             {
-                return serverPower() + LinkAndNodePower();
+                return ServerPower() + LinkAndNodePower();
             }
             return 10000;
         }
@@ -189,7 +189,7 @@ namespace HEUR.Project
             return power;
         }
 
-        private double serverPower()
+        private double ServerPower()
         {
             double serverPower = 0;
 
@@ -207,6 +207,7 @@ namespace HEUR.Project
 
                 if (active)
                 {
+                    serverPower += InputParameters.P_min[i];
                     double CPUOnServer = InputParameters.av[0, i];
                     List<double> CPU = new List<double>();
                     for (int j = 0; j < x.GetLength(1); j++)

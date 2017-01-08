@@ -39,12 +39,12 @@ namespace HEUR.Project
             {
                 writetext.WriteLine("x=[");
                 
-                for (int i = 0 ; i<result.x.GetLength(0);i++)
+                for (int i = 0 ; i<result.x.GetLength(1);i++)
                 {
                     String line = "[";
-                    for (int j = 0; j < result.x.GetLength(1); j++)
+                    for (int j = 0; j < result.x.GetLength(0); j++)
                     {
-                        line += result.x[i, j] + ",";
+                        line += result.x[j, i] + ",";
                     }
 
                     line = line.Remove(line.Length - 1, 1) + "]";

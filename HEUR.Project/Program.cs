@@ -13,6 +13,8 @@ namespace HEUR.Project
         static void Main(string[] args)
         {
             List<Result> resultList = new List<Result>();
+            DateTime dt = DateTime.Now;
+            DateTime twoHoues = dt.AddHours(2);
             do
             {
                 Result result = ResultGenerator.NaiveResult();
@@ -22,7 +24,7 @@ namespace HEUR.Project
                     resultList.Add(result);
                     Console.WriteLine("NADENO RJESENJE " + (resultList.Count) +" Snaga : "+ result.Energy());
 
-                    PrintResult(result, "Result_"+(resultList.Count)+".txt");
+                    
                 }
 
                 //while (!result.IsValid())
@@ -30,7 +32,15 @@ namespace HEUR.Project
                 //    result = ResultGenerator.TabuSearch(result);
                 //}
 
-            } while (resultList.Count<10);
+            } while (DateTime.Now <=twoHoues);
+
+            int i = 0;
+            foreach (var result in resultList.OrderBy(p=>p.Energy()).Take(10))
+            {
+                PrintResult(result, "Result_" + i + ".txt");
+                i++;
+            }
+           
         }
 
         private static void PrintResult(Result result, string filename)

@@ -20,7 +20,7 @@ namespace HEUR.Project
                 {
 
                     resultList.Add(result);
-                    Console.WriteLine("NADENO RJESENJE " + (resultList.Count));
+                    Console.WriteLine("NADENO RJESENJE " + (resultList.Count) +" Snaga : "+ result.Energy());
 
                     PrintResult(result, "Result_"+(resultList.Count)+".txt");
                 }

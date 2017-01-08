@@ -25,6 +25,7 @@ namespace HEUR.Project
             return (CheckResource() && CheckLinkConstraints() && CheckLatency());
         }
 
+        #region Checkers
         public bool CheckResource()
         {
             for (int i = 0; i < x.GetLength(0); i++)
@@ -120,8 +121,8 @@ namespace HEUR.Project
                         NodeConnection conn =
                             InputParameters.Edges.SingleOrDefault(
                                 p =>
-                                    p.firstNode == r.comunicationNodes[k]+1 &&
-                                    p.secondNode == r.comunicationNodes[k + 1]+1);
+                                    p.firstNode == r.comunicationNodes[k] + 1 &&
+                                    p.secondNode == r.comunicationNodes[k + 1] + 1);
                         if (conn != null)
                         {
                             computedLatency += conn.latency;
@@ -140,6 +141,94 @@ namespace HEUR.Project
                 }
             }
             return true;
+        }
+        #endregion
+
+        public double Energy()
+        {
+            if (IsValid())
+            {
+                return serverPower() + LinkAndNodePower();
+            }
+            return 10000;
+        }
+
+        private double LinkAndNodePower()
+        {
+            double power = 0;
+
+            HashSet<int> nodes = new HashSet<int>();
+            HashSet<NodeConnection> connections = new HashSet<NodeConnection>();
+
+            foreach (var route in routes)
+            {
+                foreach (var node in route.comunicationNodes)
+                {
+                    nodes.Add(node);
+                }
+
+                for (int i = 0; i < route.comunicationNodes.Count - 1; i++)
+                {
+                    var connection =
+                        InputParameters.Edges.SingleOrDefault(
+                            p =>
+                                p.firstNode == route.comunicationNodes[i] + 1 &&
+                                p.secondNode == route.comunicationNodes[i + 1] + 1);
+
+                    connections.Add(connection);
+                }
+            }
+
+            power += connections.Select(p => p.energyConsumption).Sum();
+
+
+            foreach (var node in nodes)
+            {
+                power += InputParameters.P[node];
+            }
+            return power;
+        }
+
+        private double serverPower()
+        {
+            double serverPower = 0;
+
+            for (int i = 0; i < x.GetLength(0); i++)
+            {
+                bool active = false;
+                for (int j = 0; j < x.GetLength(1); j++)
+                {
+                    if (x[i, j] != 0)
+                    {
+                        active = true;
+                        break;
+                    }
+                }
+
+                if (active)
+                {
+                    double CPUOnServer = InputParameters.av[0, i];
+                    List<double> CPU = new List<double>();
+                    for (int j = 0; j < x.GetLength(1); j++)
+                    {
+                        if (x[i, j] != 0)
+                        {
+                            CPU.Add(InputParameters.req[0, j]);
+
+                        }
+                    }
+
+                    double SumCPU = CPU.Sum();
+
+                    double value = (SumCPU / CPUOnServer) * (InputParameters.P_max[i] - InputParameters.P_min[i]);
+
+                    serverPower += value;
+                }
+
+            }
+
+            return serverPower;
+
         }
     }
 }

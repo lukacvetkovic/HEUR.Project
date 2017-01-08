@@ -22,7 +22,7 @@ namespace HEUR.Project
         public bool IsValid()
         {
 
-            return (CheckResource() && CheckLinkConstraints()); //&& CheckLatency());
+            return (CheckResource() && CheckLinkConstraints() && CheckLatency());
         }
 
         public bool CheckResource()
@@ -72,14 +72,14 @@ namespace HEUR.Project
             {
                 int VmDemand =
                     InputParameters.VmDemands.SingleOrDefault(
-                        p => p.componentOne == route.componentOne+1 && p.componentTwo == route.componentTwo+1).bandwith;
+                        p => p.componentOne == route.componentOne + 1 && p.componentTwo == route.componentTwo + 1).bandwith;
                 for (int k = 0; k < route.comunicationNodes.Count - 1; k++)
                 {
                     NodeConnection conn =
                         nodeConnections.SingleOrDefault(
                             p =>
-                                p.firstNode == route.comunicationNodes[k]+1 &&
-                                p.secondNode == route.comunicationNodes[k + 1]+1);
+                                p.firstNode == route.comunicationNodes[k] + 1 &&
+                                p.secondNode == route.comunicationNodes[k + 1] + 1);
                     conn.capacity -= VmDemand;
                 }
             }
@@ -114,29 +114,24 @@ namespace HEUR.Project
                 for (int j = 0; j < chain.Count - 1; j++)
                 {
                     Route r = routes.SingleOrDefault(p => p.componentOne == chain[j] && p.componentTwo == chain[j + 1]);
-                    if (r != null)
+
+                    for (int k = 0; k < r.comunicationNodes.Count - 1; k++)
                     {
-                        for (int k = 0; k < r.comunicationNodes.Count - 1; k++)
+                        NodeConnection conn =
+                            InputParameters.Edges.SingleOrDefault(
+                                p =>
+                                    p.firstNode == r.comunicationNodes[k]+1 &&
+                                    p.secondNode == r.comunicationNodes[k + 1]+1);
+                        if (conn != null)
                         {
-                            NodeConnection conn =
-                                InputParameters.Edges.SingleOrDefault(
-                                    p =>
-                                        p.firstNode == r.comunicationNodes[k] &&
-                                        p.secondNode == r.comunicationNodes[k + 1]);
-                            if (conn != null)
-                            {
-                                computedLatency += conn.latency;
-                            }
-                            else
-                            {
-                                return false;
-                            }
+                            computedLatency += conn.latency;
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
-                    else
-                    {
-                        return false;
-                    }
+
                 }
 
                 if (computedLatency > maxLatency)

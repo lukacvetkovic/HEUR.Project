@@ -14,17 +14,18 @@ namespace HEUR.Project
             do
             {
                 Result result = ResultGenerator.NaiveResult();
-                if (result.IsValid())
+                if (result.CannotFind==0)
                 {
+                    Console.WriteLine("NADENO RJESENJE WOHOOO");
                     resultList.Add(result);
                 }
 
-                while (!result.IsValid())
-                {
-                    result = ResultGenerator.TabuSearch(result);
-                }
+                //while (!result.IsValid())
+                //{
+                //    result = ResultGenerator.TabuSearch(result);
+                //}
 
-            } while (true);
+            } while (resultList.Count<=10);
         }
     }
 }

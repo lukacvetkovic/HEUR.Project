@@ -11,6 +11,7 @@ namespace HEUR.Project
         public int componentOne { get; set; }
         public int componentTwo { get; set; }
         public List<int> comunicationNodes { get; set; }
+        public List<NodeConnection> nodeConnections { get; set; }
 
     }
 }

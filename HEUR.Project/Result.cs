@@ -21,20 +21,21 @@ namespace HEUR.Project
 
         public bool IsValid()
         {
-            return (CheckResource() && CheckLinkConstraints() && CheckLatency());
+            return CheckResource();
+            //return (CheckResource() && CheckLinkConstraints() && CheckLatency());
         }
 
         private bool CheckResource()
         {
             bool CPUPass = true;
             bool MEMPass = true;
-            for (int i = 0; i < InputParameters.numServers; i++)
+            for (int i = 0; i < x.GetLength(0); i++)
             {
                 Double CPUOnServer = InputParameters.av[0, i];
                 Double MEMOnServer = InputParameters.av[1, i];
                 List<double> CPU = new List<double>();
                 List<double> MEM = new List<double>();
-                for (int j = 0; j < InputParameters.numVms; i++)
+                for (int j = 0; j < x.GetLength(1); j++)
                 {
                     if (x[i, j] != 0)
                     {

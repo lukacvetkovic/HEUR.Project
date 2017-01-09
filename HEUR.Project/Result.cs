@@ -144,11 +144,16 @@ namespace HEUR.Project
         }
         #endregion
 
+        #region Energy
         public double Energy()
         {
             if (IsValid())
             {
-                return ServerPower() + LinkAndNodePower();
+                double serverPower = ServerPower();
+                double linkPower = LinkAndNodePower();
+                Console.WriteLine("Server power : "+ ServerPower());
+                Console.WriteLine("LinkAndNodePower : " + LinkAndNodePower());
+                return serverPower + linkPower;
             }
             return 10000;
         }
@@ -162,20 +167,23 @@ namespace HEUR.Project
 
             foreach (var route in routes)
             {
-                foreach (var node in route.comunicationNodes)
+                if (route.comunicationNodes.Count != 0)
                 {
-                    nodes.Add(node);
-                }
+                    foreach (var node in route.comunicationNodes)
+                    {
+                        nodes.Add(node);
+                    }
 
-                for (int i = 0; i < route.comunicationNodes.Count - 1; i++)
-                {
-                    var connection =
-                        InputParameters.Edges.SingleOrDefault(
-                            p =>
-                                p.firstNode == route.comunicationNodes[i] + 1 &&
-                                p.secondNode == route.comunicationNodes[i + 1] + 1);
+                    for (int i = 0; i < route.comunicationNodes.Count - 1; i++)
+                    {
+                        var connection =
+                            InputParameters.Edges.SingleOrDefault(
+                                p =>
+                                    p.firstNode == route.comunicationNodes[i] + 1 &&
+                                    p.secondNode == route.comunicationNodes[i + 1] + 1);
 
-                    connections.Add(connection);
+                        connections.Add(connection);
+                    }
                 }
             }
 
@@ -223,6 +231,8 @@ namespace HEUR.Project
 
                     double value = (SumCPU / CPUOnServer) * (InputParameters.P_max[i] - InputParameters.P_min[i]);
 
+                    Console.WriteLine("Server : "+i + " Usage : "+ (SumCPU / CPUOnServer));
+
                     serverPower += value;
                 }
 
@@ -232,4 +242,5 @@ namespace HEUR.Project
 
         }
     }
+    #endregion
 }

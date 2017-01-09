@@ -36,8 +36,8 @@ namespace HEUR.Project
 
             
 
-            int i = 0;
-            foreach (var result in resultList.OrderBy(p=>p.Energy()).Take(10))
+            int i = 1;
+            foreach (var result in resultList)
             {
                 PrintResult(result, "Result_" + i + ".txt");
                 i++;

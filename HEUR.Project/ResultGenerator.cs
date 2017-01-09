@@ -13,22 +13,22 @@ namespace HEUR.Project
         {
             int cnt = 0;
             Result rez = new Result() { x = new int[InputParameters.numServers, InputParameters.numVms] };
+            Random r = new Random();
 
             rez.x = new int[InputParameters.numServers, InputParameters.numVms];
             for (int i = 0; i < InputParameters.numVms; i++)
             {
                 while (true)
                 {
-                    Random r = new Random();
-                    int server = r.Next(0, InputParameters.numServers - 1); //for ints
-                    int component = r.Next(0, InputParameters.numVms - 1);
+                    
+                    int server = r.Next(0, InputParameters.numServers - 1);
 
-                    if (rez.x[server, component] == 0)
+                    if (rez.x[server, i] == 0)
                     {
-                        rez.x[server, component] = 1;
+                        rez.x[server, i] = 1;
                         if (!rez.CheckResource())
                         {
-                            rez.x[server, component] = 0;
+                            rez.x[server, i] = 0;
                         }
                         else
                         {

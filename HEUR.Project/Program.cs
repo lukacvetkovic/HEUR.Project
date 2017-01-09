@@ -12,37 +12,26 @@ namespace HEUR.Project
     {
         static void Main(string[] args)
         {
-            List<Result> resultList = new List<Result>();
-            DateTime dt = DateTime.Now;
-            DateTime twoHoues = dt.AddHours(2);
-            do
+            double bestResult = 6000;
+            while (true)
             {
                 Result result = ResultGenerator.NaiveResult();
                 if (result.CannotFind==0 && result.IsValid())
                 {
+                    double energy = result.Energy();
+                    if (energy < bestResult)
+                    {
+                        PrintResult(result,energy+".txt");
+                        bestResult = energy;
 
-                    resultList.Add(result);
-                    Console.WriteLine("NADENO RJESENJE " + (resultList.Count) +" Snaga : "+ result.Energy());
+                        Console.WriteLine("Found better : "+bestResult);
+                    }
 
                     
                 }
 
-                //while (!result.IsValid())
-                //{
-                //    result = ResultGenerator.TabuSearch(result);
-                //}
+            } 
 
-            } while (resultList.Count<1);
-
-            
-
-            int i = 1;
-            foreach (var result in resultList)
-            {
-                PrintResult(result, "Result_" + i + ".txt");
-                i++;
-            }
-            Console.ReadLine();
         }
 
         private static void PrintResult(Result result, string filename)

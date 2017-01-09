@@ -151,8 +151,6 @@ namespace HEUR.Project
             {
                 double serverPower = ServerPower();
                 double linkPower = LinkAndNodePower();
-                Console.WriteLine("Server power : "+ ServerPower());
-                Console.WriteLine("LinkAndNodePower : " + LinkAndNodePower());
                 return serverPower + linkPower;
             }
             return 10000;
@@ -230,8 +228,6 @@ namespace HEUR.Project
                     double SumCPU = CPU.Sum();
 
                     double value = (SumCPU / CPUOnServer) * (InputParameters.P_max[i] - InputParameters.P_min[i]);
-
-                    Console.WriteLine("Server : "+i + " Usage : "+ (SumCPU / CPUOnServer));
 
                     serverPower += value;
                 }

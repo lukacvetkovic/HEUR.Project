@@ -44,12 +44,12 @@ namespace HEUR.Project
             {
                 writetext.WriteLine("x=[");
                 
-                for (int i = 0 ; i<result.x.GetLength(1);i++)
+                for (int i = 0 ; i<result.X.GetLength(1);i++)
                 {
                     String line = "[";
-                    for (int j = 0; j < result.x.GetLength(0); j++)
+                    for (int j = 0; j < result.X.GetLength(0); j++)
                     {
-                        line += result.x[j, i] + ",";
+                        line += result.X[j, i] + ",";
                     }
 
                     line = line.Remove(line.Length - 1, 1) + "]";
@@ -64,12 +64,12 @@ namespace HEUR.Project
                 writetext.WriteLine("routes={");
 
                 String routeLine = "";
-                foreach (var route in result.routes)
+                foreach (var route in result.Routes)
                 {
                     int[] comunicationNodes = route.comunicationNodes.Select(p => p + 1).ToArray();
                     routeLine ="<"+(route.componentOne+1)+","+(route.componentTwo+1)+",["+string.Join(",", comunicationNodes) +"]>,";
 
-                    if (result.routes.Last() == route)
+                    if (result.Routes.Last() == route)
                     {
                         routeLine = routeLine.Remove(routeLine.Length - 1, 1);
                     }

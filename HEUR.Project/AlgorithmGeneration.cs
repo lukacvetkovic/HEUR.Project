@@ -9,12 +9,11 @@ namespace HEUR.Project
 
     class AlgorithmGeneration
     {
-        private static double uniformRate = 0.3;
-        private static double mutationRate = 0.6;
+        private static double mutationRate = 0.02;
         private static int tournamentSize = 5;
         private static bool elitism = true;
 
-        public static Population evolvePopulation(Population pop)
+        public static Population EvolvePopulation(Population pop)
         {
 
             Population newPopulation = new Population(pop.individuals.Count, false);
@@ -22,7 +21,7 @@ namespace HEUR.Project
             // Keep our best individual
             if (elitism)
             {
-                newPopulation.individuals.Insert(0, pop.GetFittest());
+                newPopulation.individuals.Add(pop.GetFittest());
             }
 
             // Crossover population
@@ -50,35 +49,30 @@ namespace HEUR.Project
         private static Result Crossover(Result indiv1, Result indiv2)
         {
             Result newSol = new Result();
-            Random random = new Random();
             // Loop through genes
-            for (int i = 0; i < indiv1.x.GetLength(1); i++)
+            for (int i = 0; i < indiv1.X.GetLength(1); i++)
             {
-                // Crossover
-                if (random.NextDouble() <= uniformRate)
+                double energyFirst = indiv1.Energy();
+                double energySecond = indiv2.Energy();
+                double fitnessSum = energyFirst + energySecond;
+                if (GetRandomNumber(0, fitnessSum) > energyFirst)
                 {
-
-                    int server1 = GetComponentServer(i, indiv1.x);
-                    int server2 = GetComponentServer(i, indiv2.x);
-                    int server = Math.Abs((server1 - server2) / 2);
-                    newSol.x[server, i] = 1;
+                    int firstServer = GetComponentServer(i, indiv1.X);
+                    newSol.X[firstServer, i] = 1;
                 }
                 else
                 {
-
-                    if (random.NextDouble() <= 0.5)
-                    {
-                        int server = GetComponentServer(i, indiv1.x);
-                        newSol.x[server, i] = 1;
-                    }
-                    else
-                    {
-                        int server = GetComponentServer(i, indiv2.x);
-                        newSol.x[server, i] = 1;
-                    }
+                    int secondServer = GetComponentServer(i, indiv2.X);
+                    newSol.X[secondServer, i] = 1;
                 }
             }
             return newSol;
+        }
+
+        private static double GetRandomNumber(double minimum, double maximum)
+        {
+            Random random = new Random();
+            return random.NextDouble() * (maximum - minimum) + minimum;
         }
 
         private static int GetComponentServer(int component, int[,] x)
@@ -101,20 +95,20 @@ namespace HEUR.Project
         {
             Random random = new Random();
             // Loop through genes
-            for (int i = 0; i < indiv.x.GetLength(1); i++)
+            for (int i = 0; i < indiv.X.GetLength(1); i++)
             {
                 if (random.NextDouble() <= mutationRate)
                 {
                     // Create random gene
-                    int serverOfComponent = GetComponentServer(i, indiv.x);
-                    indiv.x[serverOfComponent, i] = 0;
+                    int serverOfComponent = GetComponentServer(i, indiv.X);
+                    indiv.X[serverOfComponent, i] = 0;
                     int server = random.Next(0, InputParameters.numServers - 1);
-                    indiv.x[server, i] = 1;
+                    indiv.X[server, i] = 1;
 
                 }
 
             }
-            return indiv.makeRoutes();
+            return indiv.MakeRoutes();
         }
 
         // Select individuals for crossover

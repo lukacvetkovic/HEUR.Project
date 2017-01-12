@@ -20,7 +20,7 @@ namespace HEUR.Project
                 {
                     Result r = ResultGenerator.NaiveResult();
 
-                    individuals.Add(r.makeRoutes());
+                    individuals.Add(r.MakeRoutes());
                 }
             }
         }

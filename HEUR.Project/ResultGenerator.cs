@@ -12,10 +12,10 @@ namespace HEUR.Project
         public static Result NaiveResult()
         {
             int cnt = 0;
-            Result rez = new Result() { x = new int[InputParameters.numServers, InputParameters.numVms] };
+            Result rez = new Result() { X = new int[InputParameters.numServers, InputParameters.numVms] };
             Random r = new Random();
 
-            rez.x = new int[InputParameters.numServers, InputParameters.numVms];
+            rez.X = new int[InputParameters.numServers, InputParameters.numVms];
             for (int i = 0; i < InputParameters.numVms; i++)
             {
                 while (true)
@@ -23,12 +23,12 @@ namespace HEUR.Project
 
                     int server = r.Next(0, InputParameters.numServers - 1);
 
-                    if (rez.x[server, i] == 0)
+                    if (rez.X[server, i] == 0)
                     {
-                        rez.x[server, i] = 1;
+                        rez.X[server, i] = 1;
                         if (!rez.CheckResource())
                         {
-                            rez.x[server, i] = 0;
+                            rez.X[server, i] = 0;
                         }
                         else
                         {
@@ -39,7 +39,7 @@ namespace HEUR.Project
 
             }
 
-            Result result = rez.makeRoutes();
+            Result result = rez.MakeRoutes();
 
             return result;
         }
@@ -60,7 +60,7 @@ namespace HEUR.Project
                 }
                 generationCount++;
                 Console.WriteLine("Generation: " + generationCount + " Fittest : " + population.GetFittest().Energy());
-                population = AlgorithmGeneration.evolvePopulation(population);
+                population = AlgorithmGeneration.EvolvePopulation(population);
             }
 
             return population.GetFittest();

@@ -9,17 +9,17 @@ namespace HEUR.Project
 {
     public class Result
     {
-        public int[,] x;
-        public List<Route> routes;
+        public int[,] X;
+        public List<Route> Routes;
         public int CannotFind { get; set; }
 
         public Result()
         {
-            x = new int[InputParameters.numServers, InputParameters.numVms];
-            routes = new List<Route>();
+            X = new int[InputParameters.numServers, InputParameters.numVms];
+            Routes = new List<Route>();
         }
         #region Routes
-        public Result makeRoutes()
+        public Result MakeRoutes()
         {
             List<NodeConnection> nodeConnections = new List<NodeConnection>();
             foreach (var connection in InputParameters.Edges)
@@ -46,7 +46,7 @@ namespace HEUR.Project
                         routeList.SingleOrDefault(p => p.componentOne == components[j] && p.componentTwo == components[j + 1]);
                     if (r == null)
                     {
-                        r = findRouteForComponents(components[j], components[j + 1], nodeConnections, x);
+                        r = FindRouteForComponents(components[j], components[j + 1], nodeConnections, X);
                         if (r != null)
                         {
                             routeList.Add(r);
@@ -59,15 +59,15 @@ namespace HEUR.Project
                 }
             }
 
-            return new Result { routes = routeList, x = x, CannotFind = cannotFind };
+            return new Result { Routes = routeList, X = X, CannotFind = cannotFind };
 
 
         }
 
-        private static Route findRouteForComponents(int componentStart, int componentEnd, List<NodeConnection> nodeConnections, int[,] x)
+        private static Route FindRouteForComponents(int componentStart, int componentEnd, List<NodeConnection> nodeConnections, int[,] x)
         {
-            int nodeStart = getComponentNode(componentStart, x);
-            int nodeEnd = getComponentNode(componentEnd, x);
+            int nodeStart = GetComponentNode(componentStart, x);
+            int nodeEnd = GetComponentNode(componentEnd, x);
 
             Queue<Route> q = new Queue<Route>();
 
@@ -85,7 +85,7 @@ namespace HEUR.Project
                     return r;
                 }
 
-                int[] nexts = getNextNodes(r.comunicationNodes.Last());
+                int[] nexts = GetNextNodes(r.comunicationNodes.Last());
 
                 foreach (var next in nexts.Select(p => p - 1))
                 {
@@ -118,12 +118,12 @@ namespace HEUR.Project
 
         }
 
-        private static int[] getNextNodes(int start)
+        private static int[] GetNextNodes(int start)
         {
             return InputParameters.Edges.Where(p => p.firstNode == start + 1).Select(r => r.secondNode).ToArray();
         }
 
-        private static int getComponentNode(int component, int[,] x)
+        private static int GetComponentNode(int component, int[,] x)
         {
             int server = 0;
             int node = 0;
@@ -160,15 +160,15 @@ namespace HEUR.Project
         #region Checkers
         public bool CheckResource()
         {
-            for (int i = 0; i < x.GetLength(0); i++)
+            for (int i = 0; i < X.GetLength(0); i++)
             {
                 Double CPUOnServer = InputParameters.av[0, i];
                 Double MEMOnServer = InputParameters.av[1, i];
                 List<double> CPU = new List<double>();
                 List<double> MEM = new List<double>();
-                for (int j = 0; j < x.GetLength(1); j++)
+                for (int j = 0; j < X.GetLength(1); j++)
                 {
-                    if (x[i, j] != 0)
+                    if (X[i, j] != 0)
                     {
                         CPU.Add(InputParameters.req[0, j]);
                         MEM.Add(InputParameters.req[1, j]);
@@ -201,7 +201,7 @@ namespace HEUR.Project
             {
                 nodeConnections.Add(new NodeConnection(connection.firstNode, connection.secondNode, connection.capacity, 0, 0));
             }
-            foreach (var route in routes)
+            foreach (var route in Routes)
             {
                 int VmDemand =
                     InputParameters.VmDemands.SingleOrDefault(
@@ -246,8 +246,11 @@ namespace HEUR.Project
                 double computedLatency = 0;
                 for (int j = 0; j < chain.Count - 1; j++)
                 {
-                    Route r = routes.SingleOrDefault(p => p.componentOne == chain[j] && p.componentTwo == chain[j + 1]);
-
+                    Route r = Routes.SingleOrDefault(p => p.componentOne == chain[j] && p.componentTwo == chain[j + 1]);
+                    if (r == null)
+                    {
+                        return false;
+                    }
                     for (int k = 0; k < r.comunicationNodes.Count - 1; k++)
                     {
                         NodeConnection conn =
@@ -285,7 +288,58 @@ namespace HEUR.Project
                 double linkPower = LinkAndNodePower();
                 return serverPower + linkPower;
             }
-            return 10000;
+            double energy = 0;
+            if (IsValid() == false)
+            {
+                if (CheckResource() == false)
+                {
+                    energy += InvalidServerPowerNuber() * 10000;
+                }
+            }
+
+            if (CannotFind != 0)
+            {
+                energy += ServerPower();
+                energy += LinkAndNodePower();
+                energy += 1000 * CannotFind;
+            }
+            return energy;
+        }
+
+        public double InvalidServerPowerNuber()
+        {
+            double cnt = 0;
+            for (int i = 0; i < X.GetLength(0); i++)
+            {
+                Double CPUOnServer = InputParameters.av[0, i];
+                Double MEMOnServer = InputParameters.av[1, i];
+                List<double> CPU = new List<double>();
+                List<double> MEM = new List<double>();
+                for (int j = 0; j < X.GetLength(1); j++)
+                {
+                    if (X[i, j] != 0)
+                    {
+                        CPU.Add(InputParameters.req[0, j]);
+                        MEM.Add(InputParameters.req[1, j]);
+                    }
+                }
+
+                Double SumCPU = CPU.Sum();
+                Double SumMEM = MEM.Sum();
+
+                if (SumCPU > CPUOnServer)
+                {
+                    return cnt += 1;
+                }
+
+                if (SumMEM > MEMOnServer)
+                {
+                    return cnt += 0.5;
+                }
+
+            }
+
+            return cnt;
         }
 
         private double LinkAndNodePower()
@@ -295,7 +349,7 @@ namespace HEUR.Project
             HashSet<int> nodes = new HashSet<int>();
             HashSet<NodeConnection> connections = new HashSet<NodeConnection>();
 
-            foreach (var route in routes)
+            foreach (var route in Routes)
             {
                 if (route.comunicationNodes.Count != 0)
                 {
@@ -331,12 +385,12 @@ namespace HEUR.Project
         {
             double serverPower = 0;
 
-            for (int i = 0; i < x.GetLength(0); i++)
+            for (int i = 0; i < X.GetLength(0); i++)
             {
                 bool active = false;
-                for (int j = 0; j < x.GetLength(1); j++)
+                for (int j = 0; j < X.GetLength(1); j++)
                 {
-                    if (x[i, j] != 0)
+                    if (X[i, j] != 0)
                     {
                         active = true;
                         break;
@@ -348,9 +402,9 @@ namespace HEUR.Project
                     serverPower += InputParameters.P_min[i];
                     double CPUOnServer = InputParameters.av[0, i];
                     List<double> CPU = new List<double>();
-                    for (int j = 0; j < x.GetLength(1); j++)
+                    for (int j = 0; j < X.GetLength(1); j++)
                     {
-                        if (x[i, j] != 0)
+                        if (X[i, j] != 0)
                         {
                             CPU.Add(InputParameters.req[0, j]);
 

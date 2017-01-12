@@ -9,6 +9,7 @@ namespace HEUR.Project
 {
     public static class ResultGenerator
     {
+        private static Population population = null;
         public static Result NaiveResult()
         {
             int cnt = 0;
@@ -46,7 +47,11 @@ namespace HEUR.Project
 
         public static Result GAAlgorithm(double minEnergy)
         {
-            Population population = new Population(15, true);
+            if (population == null)
+            {
+               population = new Population(15, true);
+                
+            }
 
             int generationCount = 0;
 

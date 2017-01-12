@@ -282,14 +282,15 @@ namespace HEUR.Project
         #region Energy
         public double Energy()
         {
-            if (CannotFind == 0 && IsValid())
+            bool valid = this.IsValid();
+            if (CannotFind == 0 && valid)
             {
                 double serverPower = ServerPower();
                 double linkPower = LinkAndNodePower();
                 return serverPower + linkPower;
             }
             double energy = 0;
-            if (IsValid() == false)
+            if (valid == false)
             {
                 if (CheckResource() == false)
                 {

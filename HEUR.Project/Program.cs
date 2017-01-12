@@ -21,17 +21,12 @@ namespace HEUR.Project
                     double energy = result.Energy();
                     if (energy < bestResult)
                     {
-                        //PrintResult(result,energy+".txt");
+                        PrintResult(result,energy+".txt");
                         bestResult = energy;
 
                         Console.WriteLine("Found better : "+bestResult);
                     }
-                    //if (energy < 5000)
-                    //{
-                    //    PrintResult(result, energy + "_1.txt");
-                    //}
 
-                    
                 }
 
             } 

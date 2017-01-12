@@ -15,17 +15,21 @@ namespace HEUR.Project
             double bestResult = 6000;
             while (true)
             {
-                Result result = ResultGenerator.NaiveResult();
+                Result result = ResultGenerator.GAAlgorithm(bestResult);
                 if (result.CannotFind==0 && result.IsValid())
                 {
                     double energy = result.Energy();
                     if (energy < bestResult)
                     {
-                        PrintResult(result,energy+".txt");
+                        //PrintResult(result,energy+".txt");
                         bestResult = energy;
 
                         Console.WriteLine("Found better : "+bestResult);
                     }
+                    //if (energy < 5000)
+                    //{
+                    //    PrintResult(result, energy + "_1.txt");
+                    //}
 
                     
                 }

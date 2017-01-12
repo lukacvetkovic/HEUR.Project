@@ -18,6 +18,138 @@ namespace HEUR.Project
             x = new int[InputParameters.numServers, InputParameters.numVms];
             routes = new List<Route>();
         }
+        #region Routes
+        public Result makeRoutes()
+        {
+            List<NodeConnection> nodeConnections = new List<NodeConnection>();
+            foreach (var connection in InputParameters.Edges)
+            {
+                nodeConnections.Add(new NodeConnection(connection.firstNode, connection.secondNode, connection.capacity, 0, 0));
+            }
+
+            List<Route> routeList = new List<Route>();
+            int cannotFind = 0;
+            for (int i = 0; i < InputParameters.sc.GetLength(0); i++)
+            {
+                List<int> components = new List<int>();
+                for (int j = 0; j < InputParameters.sc.GetLength(1); j++)
+                {
+                    if (InputParameters.sc[i, j] != 0)
+                    {
+                        components.Add(j);
+                    }
+                }
+
+                for (int j = 0; j < components.Count - 1; j++)
+                {
+                    Route r =
+                        routeList.SingleOrDefault(p => p.componentOne == components[j] && p.componentTwo == components[j + 1]);
+                    if (r == null)
+                    {
+                        r = findRouteForComponents(components[j], components[j + 1], nodeConnections, x);
+                        if (r != null)
+                        {
+                            routeList.Add(r);
+                        }
+                        else
+                        {
+                            cannotFind++;
+                        }
+                    }
+                }
+            }
+
+            return new Result { routes = routeList, x = x, CannotFind = cannotFind };
+
+
+        }
+
+        private static Route findRouteForComponents(int componentStart, int componentEnd, List<NodeConnection> nodeConnections, int[,] x)
+        {
+            int nodeStart = getComponentNode(componentStart, x);
+            int nodeEnd = getComponentNode(componentEnd, x);
+
+            Queue<Route> q = new Queue<Route>();
+
+
+            q.Enqueue(new Route() { componentOne = componentStart, componentTwo = componentEnd, comunicationNodes = new List<int>() { nodeStart }, nodeConnections = new List<NodeConnection>(nodeConnections) });
+
+            while (q.Count != 0)
+            {
+                Route r = q.Dequeue();
+                int node = r.comunicationNodes.Last();
+
+                if (node == nodeEnd)
+                {
+                    nodeConnections = r.nodeConnections;
+                    return r;
+                }
+
+                int[] nexts = getNextNodes(r.comunicationNodes.Last());
+
+                foreach (var next in nexts.Select(p => p - 1))
+                {
+                    Route newRoute = new Route() { comunicationNodes = new List<int>(r.comunicationNodes), nodeConnections = new List<NodeConnection>(r.nodeConnections), componentTwo = r.componentTwo, componentOne = r.componentOne };
+
+                    if (newRoute.comunicationNodes.Contains(next))
+                    {
+                        continue;
+                    }
+
+                    var comunication = newRoute.nodeConnections.SingleOrDefault(
+                            p => p.firstNode == newRoute.comunicationNodes.Last() + 1 && p.secondNode == next + 1);
+
+                    comunication.capacity -=
+                        InputParameters.VmDemands.SingleOrDefault(
+                            p => p.componentOne == componentStart + 1 && p.componentTwo == componentEnd + 1).bandwith;
+
+                    if (comunication.capacity >= 0)
+                    {
+                        newRoute.comunicationNodes.Add(next);
+
+                        q.Enqueue(newRoute);
+                    }
+                }
+
+            }
+
+
+            return null;
+
+        }
+
+        private static int[] getNextNodes(int start)
+        {
+            return InputParameters.Edges.Where(p => p.firstNode == start + 1).Select(r => r.secondNode).ToArray();
+        }
+
+        private static int getComponentNode(int component, int[,] x)
+        {
+            int server = 0;
+            int node = 0;
+            for (int i = 0; i < x.GetLength(0); i++)
+            {
+                if (x[i, component] != 0)
+                {
+                    server = i;
+                    break;
+                }
+            }
+
+
+            for (int i = 0; i < InputParameters.al.GetLength(1); i++)
+            {
+                if (InputParameters.al[server, i] != 0)
+                {
+                    node = i;
+                    break;
+                }
+
+            }
+
+            return node;
+        }
+        #endregion
 
         public bool IsValid()
         {
@@ -147,7 +279,7 @@ namespace HEUR.Project
         #region Energy
         public double Energy()
         {
-            if (IsValid())
+            if (CannotFind==0)
             {
                 double serverPower = ServerPower();
                 double linkPower = LinkAndNodePower();

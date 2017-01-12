@@ -279,7 +279,7 @@ namespace HEUR.Project
         #region Energy
         public double Energy()
         {
-            if (CannotFind==0)
+            if (CannotFind == 0 && IsValid())
             {
                 double serverPower = ServerPower();
                 double linkPower = LinkAndNodePower();

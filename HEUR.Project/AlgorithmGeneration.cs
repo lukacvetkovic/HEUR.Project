@@ -9,7 +9,7 @@ namespace HEUR.Project
 
     class AlgorithmGeneration
     {
-        private static double uniformRate = 0.7;
+        private static double uniformRate = 0.3;
         private static double mutationRate = 0.6;
         private static int tournamentSize = 5;
         private static bool elitism = true;

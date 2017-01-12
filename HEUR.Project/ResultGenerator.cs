@@ -50,8 +50,14 @@ namespace HEUR.Project
 
             int generationCount = 0;
 
-            while (population.GetFittest().Energy()>minEnergy)
+            while (true)
             {
+                if (population.GetFittest().Energy() < minEnergy && 
+                    population.GetFittest().CannotFind == 0 &&
+                    population.GetFittest().IsValid())
+                {
+                    break;
+                }
                 generationCount++;
                 Console.WriteLine("Generation: " + generationCount + " Fittest : " + population.GetFittest().Energy());
                 population = AlgorithmGeneration.evolvePopulation(population);
